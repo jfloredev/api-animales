@@ -1,0 +1,48 @@
+org: renadroid
+service: api-v1-animals
+
+provider:
+  name: aws
+  runtime: java17
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  timeout: 20
+  iam:
+    role: arn:aws:iam::225780680996:role/LabRole
+
+custom:
+  tableName: animals-${self:provider.stage}
+
+functions:
+  api:
+    handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
+    package:
+      artifact: target/function.zip
+    events:
+      - http:
+          path: /animals
+          method: get
+          cors: true
+          integration: lambda
+      - http:
+          path: /animals
+          method: post
+          cors: true
+          integration: lambda
+    environment:
+      DYNAMODB_TABLE_NAME: ${self:custom.tableName}
+
+resources:
+  Resources:
+    AnimalsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        AttributeDefinitions:
+          - AttributeName: nombre
+            AttributeType: S
+        KeySchema:
+          - AttributeName: nombre
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
