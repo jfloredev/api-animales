@@ -13,11 +13,12 @@ provider:
 custom:
   tableName: animals-${self:provider.stage}
 
+package:
+  artifact: target/api-v1-animals-1.0-SNAPSHOT-runner.jar
+
 functions:
   api:
     handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
-    package:
-      artifact: target/function.zip
     events:
       - http:
           path: /animals
