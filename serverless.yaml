@@ -17,7 +17,7 @@ functions:
   api:
     handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
     package:
-      artifact: target/function.zip
+      artifact: target/api-v1-animals-1.0-SNAPSHOT-runner.jar
     events:
       - http:
           path: /animals
